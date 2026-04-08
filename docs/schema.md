@@ -4,33 +4,37 @@
 
 ### `Character` (Postać)
 
-| Pole | Typ TS | Typ Mongoose | Wymagane | Domyślnie | Opis |
-|---|---|---|---|---|---|
-| `_id` | `ObjectId` | auto | — | auto | ID dokumentu (MongoDB) |
-| `name` | `string` | `String` | ✅ tak | — | Imię postaci (np. "Muminek") |
-| `description` | `string` | `String` | ✅ tak | — | Opis postaci |
-| `species` | `string` | `String` | ✅ tak | — | Gatunek (np. "Muminek", "Paszczak", "Miukk") |
-| `isHibernating` | `boolean` | `Boolean` | ❌ nie | `false` | Czy śpi snem zimowym? |
-| `bestFriend` | `ObjectId` | `Schema.Types.ObjectId` | ❌ nie | `null` | Ref → `Character` |
+| Pole            | Typ TS     | Typ Mongoose            | Wymagane | Domyślnie | Opis                                         |
+| --------------- | ---------- | ----------------------- | -------- | --------- | -------------------------------------------- |
+| `_id`           | `ObjectId` | auto                    | —        | auto      | ID dokumentu (MongoDB)                       |
+| `name`          | `string`   | `String`                | ✅ tak   | —         | Imię postaci (np. "Muminek")                 |
+| `description`   | `string`   | `String`                | ✅ tak   | —         | Opis postaci                                 |
+| `species`       | `string`   | `String`                | ✅ tak   | —         | Gatunek (np. "Muminek", "Paszczak", "Miukk") |
+| `isHibernating` | `boolean`  | `Boolean`               | ❌ nie   | `false`   | Czy śpi snem zimowym?                        |
+| `bestFriend`    | `ObjectId` | `Schema.Types.ObjectId` | ❌ nie   | `null`    | Ref → `Character`                            |
 
 ```typescript
 // src/models/Character.ts
 import mongoose, { Document } from "mongoose";
 
 export interface Character extends Document {
-    name: string;
-    description: string;
-    species: string;
-    isHibernating: boolean;
-    bestFriend?: mongoose.Types.ObjectId;
+  name: string;
+  description: string;
+  species: string;
+  isHibernating: boolean;
+  bestFriend?: mongoose.Types.ObjectId;
 }
 
 const CharacterSchema = new mongoose.Schema({
-    name:          { type: String,  required: true },
-    description:   { type: String,  required: true },
-    species:       { type: String,  required: true },
-    isHibernating: { type: Boolean, default: false },
-    bestFriend:    { type: mongoose.Schema.Types.ObjectId, ref: "Character", default: null },
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  species: { type: String, required: true },
+  isHibernating: { type: Boolean, default: false },
+  bestFriend: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
+    default: null,
+  },
 });
 
 export default mongoose.model<Character>("Character", CharacterSchema);
@@ -40,27 +44,31 @@ export default mongoose.model<Character>("Character", CharacterSchema);
 
 ### `Artifact` (Artefakt)
 
-| Pole | Typ TS | Typ Mongoose | Wymagane | Domyślnie | Opis |
-|---|---|---|---|---|---|
-| `_id` | `ObjectId` | auto | — | auto | ID dokumentu |
-| `name` | `string` | `String` | ✅ tak | — | Nazwa (np. "Kapelusz Tajemniczego Pana") |
-| `properties` | `string` | `String` | ✅ tak | — | Opis właściwości (np. "zmienia rzeczy w chmury") |
-| `owner` | `ObjectId` | `Schema.Types.ObjectId` | ❌ nie | `null` | Ref → `Character` |
+| Pole         | Typ TS     | Typ Mongoose            | Wymagane | Domyślnie | Opis                                             |
+| ------------ | ---------- | ----------------------- | -------- | --------- | ------------------------------------------------ |
+| `_id`        | `ObjectId` | auto                    | —        | auto      | ID dokumentu                                     |
+| `name`       | `string`   | `String`                | ✅ tak   | —         | Nazwa (np. "Kapelusz Tajemniczego Pana")         |
+| `properties` | `string`   | `String`                | ✅ tak   | —         | Opis właściwości (np. "zmienia rzeczy w chmury") |
+| `owner`      | `ObjectId` | `Schema.Types.ObjectId` | ❌ nie   | `null`    | Ref → `Character`                                |
 
 ```typescript
 // src/models/Artifact.ts
 import mongoose, { Document } from "mongoose";
 
 export interface Artifact extends Document {
-    name: string;
-    properties: string;
-    owner?: mongoose.Types.ObjectId;
+  name: string;
+  properties: string;
+  owner?: mongoose.Types.ObjectId;
 }
 
 const ArtifactSchema = new mongoose.Schema({
-    name:       { type: String, required: true },
-    properties: { type: String, required: true },
-    owner:      { type: mongoose.Schema.Types.ObjectId, ref: "Character", default: null },
+  name: { type: String, required: true },
+  properties: { type: String, required: true },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Character",
+    default: null,
+  },
 });
 
 export default mongoose.model<Artifact>("Artifact", ArtifactSchema);
@@ -74,11 +82,11 @@ export default mongoose.model<Artifact>("Artifact", ArtifactSchema);
 
 **Decyzja: `ObjectId` z `ref: "Character"`**
 
-| | String | ObjectId (ref) |
-|---|---|---|
-| Spójność danych | ❌ brak (można wpisać cokolwiek) | ✅ powiązanie z realnym dokumentem |
-| `populate()` | ❌ niemożliwe | ✅ możliwe (React dostanie pełny obiekt właściciela) |
-| Walidacja | ❌ brak | ✅ MongoDB sprawdza format |
+|                 | String                           | ObjectId (ref)                                       |
+| --------------- | -------------------------------- | ---------------------------------------------------- |
+| Spójność danych | ❌ brak (można wpisać cokolwiek) | ✅ powiązanie z realnym dokumentem                   |
+| `populate()`    | ❌ niemożliwe                    | ✅ możliwe (React dostanie pełny obiekt właściciela) |
+| Walidacja       | ❌ brak                          | ✅ MongoDB sprawdza format                           |
 
 ### Dylemat Paszczaka — co z artefaktami po usunięciu postaci?
 
@@ -105,23 +113,23 @@ Alternatywa — **kaskadowe usunięcie** artefaktów razem z postacią — była
 
 ### Characters
 
-| Metoda | Ścieżka | Opis |
-|---|---|---|
-| `GET` | `/api/characters` | Pobierz wszystkie postaci |
-| `GET` | `/api/characters/:id` | Pobierz jedną postać (z populate bestFriend) |
-| `POST` | `/api/characters` | Dodaj nową postać |
-| `PUT` | `/api/characters/:id` | Zaktualizuj postać |
-| `DELETE` | `/api/characters/:id` | Usuń postać (+ null owner w artefaktach) |
+| Metoda   | Ścieżka               | Opis                                         |
+| -------- | --------------------- | -------------------------------------------- |
+| `GET`    | `/api/characters`     | Pobierz wszystkie postaci                    |
+| `GET`    | `/api/characters/:id` | Pobierz jedną postać (z populate bestFriend) |
+| `POST`   | `/api/characters`     | Dodaj nową postać                            |
+| `PUT`    | `/api/characters/:id` | Zaktualizuj postać                           |
+| `DELETE` | `/api/characters/:id` | Usuń postać (+ null owner w artefaktach)     |
 
 ### Artifacts
 
-| Metoda | Ścieżka | Opis |
-|---|---|---|
-| `GET` | `/api/artifacts` | Pobierz wszystkie artefakty |
-| `GET` | `/api/artifacts/:id` | Pobierz jeden artefakt (z populate owner) |
-| `POST` | `/api/artifacts` | Dodaj nowy artefakt |
-| `PUT` | `/api/artifacts/:id` | Zaktualizuj artefakt |
-| `DELETE` | `/api/artifacts/:id` | Usuń artefakt |
+| Metoda   | Ścieżka              | Opis                                      |
+| -------- | -------------------- | ----------------------------------------- |
+| `GET`    | `/api/artifacts`     | Pobierz wszystkie artefakty               |
+| `GET`    | `/api/artifacts/:id` | Pobierz jeden artefakt (z populate owner) |
+| `POST`   | `/api/artifacts`     | Dodaj nowy artefakt                       |
+| `PUT`    | `/api/artifacts/:id` | Zaktualizuj artefakt                      |
+| `DELETE` | `/api/artifacts/:id` | Usuń artefakt                             |
 
 ---
 

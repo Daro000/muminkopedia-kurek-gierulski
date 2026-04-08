@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./dist/bin/www",
     "dev": "tsx --watch ./src/bin/www.ts",
+    "seed": "tsx scripts/seed.ts",
     "build": "tsc"
   },
   "dependencies": {
